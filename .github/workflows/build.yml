@@ -1,0 +1,43 @@
+name: Build miniforge
+
+on:
+  push:
+    branches:
+      - randy
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Miniforge3-Linux-x86_64
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set miniforge version
+        run: |
+          VERSION=$(cat version | tr -d '[:space:]')
+          echo "MINIFORGE_VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Build miniforge
+        env:
+          ARCH: x86_64
+          OS_NAME: "Linux"
+          TARGET_PLATFORM: linux-64
+          DOCKER_ARCH: amd64
+          DOCKERIMAGE: condaforge/linux-anvil-cos7-x86_64
+          TEST_IMAGE_NAMES: "ubuntu:24.04 ubuntu:22.04"
+        run: |
+          bash build_miniforge.sh
+          cp build/Miniforge3-*-Linux-x86_64.sh build/Miniforge3-Linux-x86_64.sh
+          ls -lhAF build
+
+      - name: Upload miniforge to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/Miniforge3-Linux-x86_64*
+          tag: ${{ env.MINIFORGE_VERSION }}
+          file_glob: true
+          overwrite: true

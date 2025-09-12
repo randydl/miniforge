@@ -26,22 +26,25 @@ license_file: {{ os.environ.get("MINIFORGE_LICENSE_OVERRIDE", "../LICENSE") }}
 initialize_conda: True
 initialize_by_default: False
 
-user_requested_specs:
-  - python 3.12.*
-  - conda =={{ version.split("-")[0] }}
-  - mamba =={{ mamba_version }}
-  - pip
-  # Omit conda-libmamba-solver so that conda is free to remove it later
-  - miniforge_console_shortcut 1.*  # [win]
-
 specs:
   - python 3.12.*
   - conda {{ version.split("-")[0] }}
   - mamba {{ mamba_version }}
   - conda-libmamba-solver {{ conda_libmamba_solver_version }}
-  - pip
   - miniforge_console_shortcut 1.*  # [win]
+  - pip
+  - uv
+
+extra_envs:
+  py311:
+    specs:
+      - python 3.11.*
+  py310:
+    specs:
+      - python 3.10.*
 
 virtual_specs:
   - __glibc >=2.17 # [linux]
   - __osx >=10.13 # [osx]
+
+post_install: post_install.sh
