@@ -1,7 +1,0 @@
-name: miniconda-autoupdate
-channels:
-  - conda-forge
-  - nodefaults
-dependencies:
-  - packaging
-  - requests
