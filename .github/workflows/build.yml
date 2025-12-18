@@ -1,0 +1,36 @@
+name: Build Miniforge Installer
+
+on:
+  push:
+    branches: [ test ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          python-version: "3.12"
+          auto-update-conda: true
+
+      - name: Build installer
+        shell: bash -el {0}
+        run: |
+          conda install -y constructor
+          constructor . --output-dir dist
+          cp dist/Miniforge3-*-Linux-x86_64.sh dist/Miniforge3-Linux-x86_64.sh
+
+      - name: Create github release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: dist/Miniforge3-Linux-x86_64.sh
+          tag: latest
+          file_glob: true
+          overwrite: true

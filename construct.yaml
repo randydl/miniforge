@@ -1,0 +1,30 @@
+name: Miniforge3
+version: latest
+
+channels:
+  - conda-forge
+
+keep_pkgs: True
+write_condarc: True
+initialize_conda: True
+initialize_by_default: False
+
+specs:
+  - python 3.12.*
+  - conda
+  - pip
+  - uv
+
+extra_envs:
+  py311:
+    specs:
+      - python 3.11.*
+  py310:
+    specs:
+      - python 3.10.*
+
+virtual_specs:
+  - __glibc>=2.17  # [linux]
+  - __osx>=10.13  # [osx]
+
+post_install: post_install.sh
